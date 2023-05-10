@@ -1,0 +1,31 @@
+groups:
+- name: host
+  rules:
+  - alert: Processing_time
+    expr: ( probe_http_duration_seconds{instance="https://lms.skillfactory.ru", job="blackbox-exporter", phase="processing"} ) > 5
+    for: 30s
+    labels: 
+      severity: warning
+    annotations:
+      summary: "Server respond too long"
+      description: ""
+
+  - alert: server_restarted
+    expr: ( node_time_seconds{instance="$node",job="$job"} - node_boot_time_seconds{instance="$node",job="$job"} ) < 5
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Server was suddenly restarted"
+
+  - alert: status_code_changed
+    expr: changes( probe_http_status_code{instance="https://lms.skillfactory.ru", job="blackbox-exporter"}[1m] ) > 0
+    for: 30s
+    labels:
+      severity: warning
+    annotations:
+      summary: "Returned status code changed"
+  
+
+
+
